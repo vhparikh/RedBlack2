@@ -1,19 +1,28 @@
+//Created by Vatsal ParikOAh
+//Date: 12/10/20
+//Red Black Tree with insertion
+//got cases for fixing from https://www.youtube.com/watch?v=5IBxA-bZZH8
+
+//imports
 #include <iostream>
 #include <cstring>
 #include <fstream>
 
 using namespace std;
 
+//constants for color
 const int RED = 0;
 const int BLACK = 1;
 
+//node struct
 struct Node {
-  Node* left;
-  Node* right;
-  Node* parent;
-  int num;
-  int color;
+  Node* left; //pointer to left child
+  Node* right; //pointer to right child
+  Node* parent; //pointer to parent node
+  int num; //value of node
+  int color; //color of node
 
+  //basic constructor sets all pointers to null and ints to 0
   Node() {
     left = NULL;
     right = NULL;
@@ -22,6 +31,7 @@ struct Node {
     num = 0;
   }
 
+  //sets all pointers to null and sets num to param value
   Node(int n) {
     left = NULL;
     right = NULL;
@@ -32,45 +42,43 @@ struct Node {
   
 };
 
+//prototypes
 void print(Node* n, int space);
 Node* add(Node* &n, int val);
 void fix(Node* &head, Node* &n);
 Node* getSibling(Node* n);
 Node* getUncle(Node* n);
 int getColor(Node* n);
+void search(Node* n, int val);
 
+//main method
 int main() {
 
-  //Node* n = new Node();
-  char input[80];
-  int data;
-  Node* head = NULL;
-  bool quit = false;
+  char input[80]; //stores user command
+  int data; //value for node
+  Node* head = NULL; //head node of tree
+  bool quit = false; //tracks if the player wants to continue or stop
 
-  cout << "Welcome to RedBlack tree" << endl;
+  //intro statement
+  cout << "Welcome to RedBlack tree your commands are add, file, print and quit" << endl;
 
-  /*for (int i = 0; i < 30; i++) {
-    Node* node = add(head, i);
-    fix(head, node);
-    //  Node* temp = add(head, 100-i);
-    //fix(head, temp);
-  }
-  print(head, 0);*/
-  
+  //while user doesn't want to quit
   while(!quit) {
+
+    //get input
     cin.get(input, 80);
     cin.get();
 
+    //if user wants to add get the number they want to add and call add and then fix the tree
     if (strcmp(input, "add") == 0) {
       cout << "Enter the number you would like to add to the tree" << endl;
       cin >> data;
       cin.get();
       Node* node = add(head, data);
-      //cout << "a" << endl;
-      //cout << getColor(node->parent) << endl;
       fix(head, node);
     }
 
+    //else if user wants to add with file get file path and add each value and fix the tree everytime
     else if (strcmp(input, "file") == 0) {
       cout << "Enter the file path" << endl;
       cin.get(input, 80);
@@ -87,10 +95,19 @@ int main() {
       
     }
 
+    //else if user wants to print the tree call print
     else if (strcmp(input, "print") == 0) {
       print(head, 0);
     }
+
+    else if (strcmp(input, "search") == 0) {
+      cout << "Enter the number you would like to seach for in the tree" << endl;
+      cin >> data;
+      cin.get();
+      search(head, data);
+    }
     
+    //else if user wants to quit set quit to true
     else if (strcmp(input, "quit") == 0) {
       quit = true;
     }
@@ -99,6 +116,46 @@ int main() {
   
 }
 
+void search(Node* n, int val) {
+
+  if (n == NULL) {
+    cout << "The tree is empty" << endl;
+    return;
+  }
+
+  if (n->num == val) {
+    cout << "The number exists" << endl;
+    return;
+  }
+
+  if (n->num > val) {
+
+    if (n->left != NULL) {
+      Node* temp = n->left;
+      search(temp, val);
+    }
+
+    else {
+      cout << "The number isn't on the tree" << endl;
+      return;
+    }
+  }
+
+  if (n->num < val) {
+
+    if (n->right != NULL) {
+      Node* temp = n->right;
+      search(temp, val);
+    }
+
+    else {
+      cout << "The number isn't on the tree" << endl;
+      return;
+    }
+  }
+}
+
+//returns color of node if it is null it is black
 int getColor(Node* n) {
   if (n == NULL) {
     return BLACK;
@@ -106,14 +163,15 @@ int getColor(Node* n) {
   return n->color;
 }
 
+//returns uncle of node
 Node* getUncle(Node* n) {
-  //cout << getSibling(n->parent)->num << endl;
   if (getSibling(n->parent) == NULL) {
     return NULL;
   }
   return getSibling(n->parent);
 }
 
+//returns sibling of node
 Node* getSibling(Node* n) {
   
   if (n->parent->num > n->num) {
@@ -134,22 +192,17 @@ Node* getSibling(Node* n) {
 
 }
 
+//fixes the tree after a node is added
 void fix(Node* &head, Node* &n) {
 
-  //Node* n = add(head, val);
-  
-  //  cout << "d" << endl;
-
+  //if the node was the head node make it black and return
   if (head == n) {
-    //cout << "case 0" << endl;
     n->color = 1;
     return;
   }
 
-  //cout << "f" << endl;
-  //cout << n->parent->num << endl;
+  //if the parent and uncle are red we need to recolor the nodes
   if (getColor(n->parent) == RED && getColor(getUncle(n)) == RED) {
-    // cout << "case 1" << endl;
     n->parent->color = BLACK;
     getUncle(n)->color = BLACK;
     n->parent->parent->color = RED;
@@ -158,12 +211,11 @@ void fix(Node* &head, Node* &n) {
     return;
   }
 
-  //cout << "h" << endl;
+  //if the parent is red and the uncle is black we got some interesting things to do
   if (getColor(n->parent) == RED && getColor(getUncle(n)) == BLACK) {
-    //cout << "g" << endl;
-    //triangle right
+    
+    //triangle right rotate n parent so n is now parent of n->parent
     if (n->parent->num > n->num && n->parent->parent->num <= n->parent->num) {
-      //cout << "tr" << endl;
       Node* parentN = n->parent;
       Node* grandparentN = parentN->parent; 
       
@@ -172,14 +224,12 @@ void fix(Node* &head, Node* &n) {
       parentN->left = NULL;
       parentN->parent = n;
       n->parent = grandparentN;
-      //n = parentN;
       fix(head, parentN);
       return;
     }
 
-    //triangle left
+    //triangle left rotate n parent so n is now parent of n->parent
     else if (n->parent->num <= n->num && n->parent->parent->num > n->parent->num){
-      //cout << "tl" << endl;
       Node* parentN = n->parent;
       Node* grandparentN = parentN->parent;
 
@@ -188,28 +238,29 @@ void fix(Node* &head, Node* &n) {
       parentN->right = NULL;                                                                                                                       
       parentN->parent = n;                                                                                                                         
       n->parent = grandparentN;
-      // n = parentN;
       fix(head, parentN);
       return;
     }
 
-    //line right
+    //line right rotate n grandparent
     if (n->parent->num <= n->num && n->parent->parent->num <= n->num) {
-      //cout << "lr" << endl;
       Node* parentA = n->parent;
       Node* grandparentB = parentA->parent;
       Node* siblingD = getSibling(n);
       
       parentA->left = grandparentB;
       grandparentB->right = siblingD;
+
       if (siblingD != NULL) {
 	siblingD->parent = grandparentB;
       }
+
       if (grandparentB == head) {
 	head = parentA;
 	parentA->parent = NULL;
 	grandparentB->parent = parentA;
       }
+
       else {
 	parentA->parent = grandparentB->parent;
 	Node* greatgrandN = grandparentB->parent;
@@ -218,6 +269,7 @@ void fix(Node* &head, Node* &n) {
 	if (greatgrandN->num > parentA->num) {
 	  greatgrandN->left = parentA;
 	}
+
 	else {
 	  greatgrandN->right = parentA;
 	}
@@ -229,20 +281,17 @@ void fix(Node* &head, Node* &n) {
       
     }
 
-    //line left
+    //line left rotate n grandparent
     if (n->parent->num > n->num && n->parent->parent->num > n->num) {
-      //cout << "ll" << endl;
       Node* parentA = n->parent;                                                                                                                   
       Node* grandparentB = parentA->parent;                                                                                                       
       Node* siblingD = getSibling(n);
       
       parentA->right = grandparentB;                                                                                                               
       grandparentB->left = siblingD;                                                                                                              
-      //siblingD->parent = grandparentB;
       if (siblingD != NULL) {
 	siblingD->parent = grandparentB;
       }
-      //cout << "b" << endl;
       
       if (grandparentB == head) {                                                                                                                  
         head = parentA;                                                                                                                            
@@ -271,21 +320,22 @@ void fix(Node* &head, Node* &n) {
   
 }
 
+//simple add function
 Node* add(Node* &n, int val) {
 
+  //if location is null add node here
   if (n == NULL) {
     n = new Node(val);
-    //cout << "head" << endl;
     return n;
   }
 
+  //if the current node val is > val traverse left
   if (n->num > val) {
 
     if (n->left == NULL) {
       Node* temp = new Node(val);
       n->left = temp;
       temp->parent = n;
-      //cout << "left" << endl;
       return temp;
     }
     
@@ -295,13 +345,13 @@ Node* add(Node* &n, int val) {
     }
   }
 
+  //if the current node val is < val traverse right
   if (n->num <= val) {
 
     if (n->right == NULL) {
       Node* temp = new Node(val);
       n->right = temp;
       temp->parent = n;
-      //cout << "right" << endl;
       return temp;
     }
 
@@ -311,7 +361,7 @@ Node* add(Node* &n, int val) {
     }
   }
 
-  //cout << "safety" << endl;
+  //just a safety return so code doesn't crash
   return NULL;
 }
 
