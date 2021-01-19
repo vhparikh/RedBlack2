@@ -49,7 +49,10 @@ void fix(Node* &head, Node* &n);
 Node* getSibling(Node* n);
 Node* getUncle(Node* n);
 int getColor(Node* n);
-void search(Node* n, int val);
+Node* search(Node* n, int val);
+int childrenCount(Node* n);
+void basicDelete(Node* &head, int val);
+Node* findDelNode(Node* n, int val);
 
 //main method
 int main() {
@@ -68,7 +71,7 @@ int main() {
     //get input
     cin.get(input, 80);
     cin.get();
-
+    
     //if user wants to add get the number they want to add and call add and then fix the tree
     if (strcmp(input, "add") == 0) {
       cout << "Enter the number you would like to add to the tree" << endl;
@@ -104,7 +107,14 @@ int main() {
       cout << "Enter the number you would like to seach for in the tree" << endl;
       cin >> data;
       cin.get();
-      search(head, data);
+      Node* temp = search(head, data);
+    }
+
+    else if (strcmp(input, "delete") == 0) {
+      cout << "Enter the number you would like to delete from the tree" << endl;
+      cin >> data;
+      cin.get();
+      basicDelete(head, data);
     }
     
     //else if user wants to quit set quit to true
@@ -116,43 +126,121 @@ int main() {
   
 }
 
-void search(Node* n, int val) {
+Node* findDelNode(Node* n, int val) {
 
-  if (n == NULL) {
+  Node* current = search(n, val);
+
+  if (current->right == NULL) {
+    return NULL;
+  }
+  else {
+    current = current->right;
+  }
+
+  while (current->left != NULL) {
+    current = current->left;
+  }
+
+  return current;
+  
+}
+
+void basicDelete(Node* &head, int val) {
+
+  if (head == NULL) {
     cout << "The tree is empty" << endl;
     return;
   }
 
-  if (n->num == val) {
-    cout << "The number exists" << endl;
+  Node* n = search(head, val);
+
+  if (n == NULL) {
+    cout << "This value doesn't exist in the tree" << endl;
     return;
   }
 
-  if (n->num > val) {
+  if (n == head && childrenCount(n) == 0) {
+    head = NULL;
+    delete n;
+    cout << "The value has been removed from the tree" << endl;
+    return;
+  }
+
+  Node* delNode = findDelNode(head, val);
+
+  //red node with no children is a simple BST delete
+  if (getColor(n) == RED && childrenCount(n) == 0) {
+    Node* p = n->parent;
+
+    if (p->left == n) {
+      p->left = NULL;
+      delete n;
+      return;
+    }
+    else {
+      p->right = NULL;
+      delete n;
+      return;
+    }    
+  }
+
+  
+  
+}
+
+Node* search(Node* n, int val) {
+
+  if (n == NULL) {
+    cout << "The tree is empty" << endl;
+    return NULL;
+  }
+
+  else if (n->num == val) {
+    cout << "The number exists" << endl;
+    return n;
+  }
+
+  else if (n->num > val) {
 
     if (n->left != NULL) {
       Node* temp = n->left;
-      search(temp, val);
+      return search(temp, val);
     }
 
     else {
       cout << "The number isn't on the tree" << endl;
-      return;
+      return NULL;
     }
   }
 
-  if (n->num < val) {
+  else {
 
     if (n->right != NULL) {
       Node* temp = n->right;
-      search(temp, val);
+      return search(temp, val);
     }
 
     else {
       cout << "The number isn't on the tree" << endl;
-      return;
+      return NULL;
     }
   }
+
+}
+
+int childrenCount(Node* n) {
+  int count = 0;
+
+  if (n->left != NULL) {
+    count++;
+  }
+
+  if (n->right != NULL) {
+    count++;
+  }
+
+  return count;
+  
 }
 
 //returns color of node if it is null it is black
