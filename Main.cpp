@@ -53,6 +53,8 @@ Node* search(Node* n, int val);
 int childrenCount(Node* n);
 void basicDelete(Node* &head, int val);
 Node* findDelNode(Node* n, int val);
+void doubleBlack(Node* &head, Node* &black, bool del);
+void remove(Node* n);
 
 //main method
 int main() {
@@ -126,6 +128,59 @@ int main() {
   
 }
 
+void remove(Node* current) {
+
+  Node* p = current->parent;
+  Node* c = NULL;
+  
+  if (current == NULL) {
+    return;
+  }
+
+  if (current->right != NULL) {
+    c = current->right;
+  }
+  else {
+    c = current->left;
+  }
+
+  if (p->right == current) {
+    p->right = c;
+  }
+  else {
+    p->left = c;
+  }
+
+  delete current;
+  
+}
+
+void doubleBlack(Node* &head, Node* &black, bool del) {
+
+  //case 1
+  if (head == black) {
+
+    if (del == true) {
+      remove(black);
+    }
+
+    return;
+  }
+
+  Node* p = black->parent;
+  
+  //case 2 n is on the left
+  if (getColor(getSibling(black)) == RED && p->left == black) {
+    
+  }
+
+  //case 2 n is on the right
+  else if (getColor(getSibling(black)) == RED && p->right == black) {
+    
+  }
+  
+}
+
 Node* findDelNode(Node* n, int val) {
 
   Node* current = search(n, val);
@@ -166,8 +221,6 @@ void basicDelete(Node* &head, int val) {
     return;
   }
 
-  Node* delNode = findDelNode(head, val);
-
   //red node with no children is a simple BST delete
   if (getColor(n) == RED && childrenCount(n) == 0) {
     Node* p = n->parent;
@@ -184,7 +237,57 @@ void basicDelete(Node* &head, int val) {
     }    
   }
 
-  
+  if (getColor(n) == BLACK && childrenCount(n) != 2) {
+
+    if (childrenCount(n) == 0) {
+      doubleBlack(head, n, true);
+      return;
+    }
+
+    Node* c = NULL;
+    if (n->right != NULL) {
+      c = n->right;
+    }
+    else {
+      c = n->left;
+    }
+
+    
+    if (n != head) {
+      Node* p = n->parent;
+      
+      if (p->left == n) {
+	p->left = c;
+	c->parent = p;
+      }
+      else {
+	p->right = c;
+	c->parent = p;
+      }
+
+      if (getColor(c) == RED) {
+	c->color = BLACK;
+	delete n;
+	return;
+      }
+      else {
+	delete n;
+	doubleBlack(head, c, false);
+	return;
+      }
+     
+    }
+    else {
+      head = c;
+      head->color = BLACK;
+      head->parent = NULL;
+      delete n;
+      return;
+    }
+  }
+
+  Node* delNode = findDelNode(head, val);
+  n->num = delNode->num;
   
 }
 
