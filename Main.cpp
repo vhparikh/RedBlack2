@@ -168,16 +168,162 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   }
 
   Node* p = black->parent;
+  Node* gp = p->parent;
+  Node* s = getSibling(black);
+  Node* nl = s->left;
+  Node* nr = s->right;
   
   //case 2 n is on the left
-  if (getColor(getSibling(black)) == RED && p->left == black) {
+  if (getColor(s) == RED && p->left == black) {
+
+    if (head == p) {
+      head = s;
+      s->parent = NULL;
+    }
+    else {
+
+      if (gp->left == p) {
+	gp->left = s;
+	s->parent = gp;
+      }
+      else {
+	gp->right = s;
+	s->parent = gp;
+      }
+    }
+
+    p->color = RED;
+    s->color = BLACK;
+
+    s->left = p;
+    p->parent = s;
+    p->right = nl;
+
+    doubleBlack(head, black, del);
+    return;
     
   }
 
   //case 2 n is on the right
-  else if (getColor(getSibling(black)) == RED && p->right == black) {
+  else if (getColor(s) == RED && p->right == black) {
+
+    if (head == p) {
+      head = s;
+      s->parent = NULL;
+    }
+    else {
+
+      if (gp->left == p) {
+	gp->left = s;
+	s->parent = gp;
+      }
+      else {
+	gp->right = s;
+	s->parent = gp;
+      }
+    }
+
+    p->color = RED;
+    s->color = BLACK;
+
+    s->right = p;
+    p->parent = s;
+    p->left = nr;
+
+    doubleBlack(head, black, del);
+    return;
     
   }
+
+  //case 3 n is on the right
+  if (getColor(s) == BLACK && p->right == black) {
+    s->color = RED;
+
+    if (del == true) {
+      remove(black);
+    }
+
+    doubleBlack(head, p, false);
+    return;
+  }
+
+  //case 3 n is on the left
+  else if (getColor(s) == BLACK && p->left == black) {
+    s->color = RED;
+
+    if (del == true) {
+      remove(black);
+    }
+    
+    doubleBlack(head, p, false);
+    return;
+  }
+
+  //case 4 n is on the right
+  if (getColor(p) == RED && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == BLACK && p->right == black) {
+    p->color = BLACK;
+    s->color = RED;
+
+    if (del == true) {
+      remove(black);
+    }
+    
+    return;
+  }
+
+  //case 4 n is on the left
+  else if (getColor(p) == RED && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == BLACK && p->left == black) {
+    p->color = BLACK;
+    s->color = RED;
+
+    if (del == true) {
+      remove(black);
+    }
+
+    return;
+  }
+
+  //case 5 n is on the right
+  if (getColor(p) == BLACK && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == RED && p->right == black) {
+    Node* nrl = nr->left;
+    p->left = nr;
+    nr->parent = p;
+    nr->color = BLACK;
+    nr->left = s;
+
+    s->right = nrl;
+    nrl->parent = s;
+    s->parent = nr;
+    s->color = RED;
+
+    if (del == true) {
+      remove(black);
+    }
+    
+    return;
+  }
+
+  //case 5 n is on the left
+  else if (getColor(p) == BLACK && getColor(s) == BLACK && getColor(nr) == BLACK && getColor(nl) == RED && p->left == black) {
+    Node* nlr = nl->right;
+    p->right = nl;
+    nl->parent = p;
+    nl->color = BLACK;
+    nl->right = s;
+
+    s->left = nlr;
+    nlr->parent = s;
+    s->parent = nl;
+    s->color = RED;
+
+    if (del == true) {
+      remove(black);
+    }
+
+    return;
+  }
+
+  
   
 }
 
