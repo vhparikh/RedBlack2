@@ -259,8 +259,78 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
     return;
   }
 
+  //case 4 n is on the right includes wiki subcase
+  if (getColor(p) == RED && getColor(s) == BLACK && p->right == black) {
+
+    if (getColor(nr) == RED && getColor(nl) == BLACK) {
+      p->left = nr;
+      nr->parent = p;
+      Node* nrl = nr->left;
+
+      if (nrl != NULL) {
+	nrl->parent = s;
+      }
+
+      s->right = nrl;
+      s->parent = nr;
+      nr->left = s;
+
+      nr->color = BLACK;
+      s->color = RED;
+      doubleBlack(head, black, del);
+      return;
+    }
+    else if (getColor(nr) == BLACK && getColor(nl) == BLACK) {
+      s->color = RED;
+      p->color = BLACK;
+
+      if (del == true) {
+	remove(black);
+      }
+
+      return;
+    }
+    
+  }
+  
+  //case 4 n is on the left includes wiki subcase
+  else if (getColor(p) == RED && getColor(s) == BLACK && p->left == black) {
+
+    if (getColor(nl) == RED && getColor(nr) == BLACK) {
+      p->right = nl;
+      nl->parent = p;
+      Node* nlr = nl->right;
+
+      if (nlr != NULL) {
+	nlr->parent = s;
+      }
+
+      s->left = nlr;
+      s->parent = nl;
+      nl->right = s;
+
+      nl->color = BLACK;
+      s->color = RED;
+      doubleBlack(head, black, del);
+      return;
+    }
+    else if (getColor(nl) == BLACK && getColor(nr) == BLACK) {
+      s->color = RED;
+      p->color = BLACK;
+
+      if (del == true) {
+	remove(black);
+      }
+
+      return;
+    }
+    
+  }
+
+  
+  
   //case 4 n is on the right
-  if (getColor(p) == RED && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == BLACK && p->right == black) {
+  /*if (getColor(p) == RED && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == BLACK && p->right == black) {
     p->color = BLACK;
     s->color = RED;
 
@@ -281,7 +351,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
     }
 
     return;
-  }
+    }*/
 
   //case 5 n is on the right
   if (getColor(p) == BLACK && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == RED && p->right == black) {
