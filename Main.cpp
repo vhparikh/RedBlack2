@@ -174,7 +174,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   Node* nr = s->right;
   
   //case 2 n is on the left
-  if (getColor(s) == RED && p->left == black) {
+  if (getColor(s) == RED && getColor(p) == BLACK && p->left == black) {
 
     if (head == p) {
       head = s;
@@ -205,7 +205,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   }
 
   //case 2 n is on the right
-  else if (getColor(s) == RED && p->right == black) {
+  else if (getColor(s) == RED && getColor(p) == BLACK && p->right == black) {
 
     if (head == p) {
       head = s;
@@ -236,7 +236,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   }
 
   //case 3 n is on the right
-  if (getColor(s) == BLACK && p->right == black) {
+  if (getColor(s) == BLACK && getColor(p) == BLACK && p->right == black) {
     s->color = RED;
 
     if (del == true) {
@@ -248,7 +248,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   }
 
   //case 3 n is on the left
-  else if (getColor(s) == BLACK && p->left == black) {
+  else if (getColor(s) == BLACK && getColor(p) == BLACK && p->left == black) {
     s->color = RED;
 
     if (del == true) {
@@ -323,8 +323,75 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
     return;
   }
 
-  
-  
+  //case 6 n is on the right
+  if (getColor(s) == BLACK && getColor(nl) == RED && p->right == black) {
+
+    if (head == p) {
+      head = s;
+      s->parent = NULL;
+    }
+    else {
+
+      if (gp->left == p) {
+	gp->left = s;
+	s->parent = gp;
+      }
+      else {
+	gp->right = s;
+	s->parent = gp;
+      }
+      
+    }
+
+    s->color = p->color;
+    p->color = BLACK;
+
+    s->right = p;
+    p->parent = s;
+    p->left = nr;
+    nr->parent = p;
+
+    if (del == true) {
+      remove(black);
+    }
+    
+    return;
+  }
+
+  //case 6 n is on the left
+  else if (getColor(s) == BLACK && getColor(nr) == RED && p->left == black) {
+
+    if (head == p) {
+      head = s;
+      s->parent = NULL;
+    }
+    else {
+
+      if (gp->left == p) {
+	gp->left = s;
+	s->parent = gp;
+      }
+      else {
+	gp->right = s;
+	s->parent = gp;
+      }
+      
+    }
+
+    s->color = p->color;
+    p->color = BLACK;
+
+    s->left = p;
+    p->parent = s;
+    p->right = nl;
+    nl->parent = p;
+
+    if (del == true) {
+      remove(black);
+    }
+    
+    return;
+  }
 }
 
 Node* findDelNode(Node* n, int val) {
@@ -434,7 +501,34 @@ void basicDelete(Node* &head, int val) {
 
   Node* delNode = findDelNode(head, val);
   n->num = delNode->num;
+
+  if (childrenCount(delNode) == 1) {
+    Node* c2 = NULL;
+    if (delNode->left != NULL) {
+      c2 = delNode->left;
+    }
+    else {
+      c2= delNode->right;
+    }
+
+    if (getColor(delNode) != getColor(c2)) {
+
+      if (delNode->parent->left == delNode) {
+	delNode->parent->left = c2;
+      }
+      else {
+	delNode->parent->right = c2;
+      }
+
+      c2->parent = delNode->parent;
+      c2->color = BLACK;
+      delete delNode;
+    }
+    return;
+  }
+
   
+    
 }
 
 Node* search(Node* n, int val) {
