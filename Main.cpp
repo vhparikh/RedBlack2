@@ -1,7 +1,8 @@
-//Created by Vatsal ParikOAh
-//Date: 12/10/20
-//Red Black Tree with insertion
+//Created by Vatsal Parikh
+//Date: 1/20/21
+//Red Black Tree with insertion and deletion
 //got cases for fixing from https://www.youtube.com/watch?v=5IBxA-bZZH8
+//got deletion cases from Gabraiths video
 
 //imports
 #include <iostream>
@@ -65,7 +66,7 @@ int main() {
   bool quit = false; //tracks if the player wants to continue or stop
 
   //intro statement
-  cout << "Welcome to RedBlack tree your commands are add, file, print and quit" << endl;
+  cout << "Welcome to RedBlack tree your commands are add, file, delete, search, print and quit" << endl;
 
   //while user doesn't want to quit
   while(!quit) {
@@ -105,13 +106,22 @@ int main() {
       print(head, 0);
     }
 
+    //else if user wants to search call search
     else if (strcmp(input, "search") == 0) {
       cout << "Enter the number you would like to seach for in the tree" << endl;
       cin >> data;
       cin.get();
       Node* temp = search(head, data);
+
+      if (temp == NULL) {
+	cout << "Value not in tree" << endl;
+      }
+      else {
+	cout << "Value in tree" << endl;
+      }
     }
 
+    //else if user wants to delete call basicDelete
     else if (strcmp(input, "delete") == 0) {
       cout << "Enter the number you would like to delete from the tree" << endl;
       cin >> data;
@@ -128,6 +138,7 @@ int main() {
   
 }
 
+//removes node from memory and tree
 void remove(Node* current) {
   cout << "remove" << endl;
   Node* p = current->parent;
@@ -155,11 +166,12 @@ void remove(Node* current) {
   
 }
 
+//cases for double black nodes where something must be done to maintain black node count
 void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 1
   if (head == black) {
-    cout << "c1" << endl;
+    //cout << "c1" << endl;
     if (del == true) {
       remove(black);
     }
@@ -167,6 +179,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
     return;
   }
 
+  //these names are from galbraiths video for ease of keeping track
   Node* p = black->parent;
   Node* gp = p->parent;
   Node* s = getSibling(black);
@@ -175,7 +188,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   
   //case 2 n is on the left
   if (getColor(s) == RED && getColor(p) == BLACK && p->left == black) {
-    cout << "c2l" << endl;
+    //cout << "c2l" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -210,7 +223,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 2 n is on the right
   else if (getColor(s) == RED && getColor(p) == BLACK && p->right == black) {
-    cout << "c2r" << endl;
+    //cout << "c2r" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -245,7 +258,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 3 n is on the right
   if (getColor(s) == BLACK && getColor(p) == BLACK && p->right == black) {
-    cout << "c3r" << endl;
+    //cout << "c3r" << endl;
     s->color = RED;
 
     if (del == true) {
@@ -258,7 +271,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 3 n is on the left
   else if (getColor(s) == BLACK && getColor(p) == BLACK && p->left == black) {
-    cout << "c3l" << endl;
+    //cout << "c3l" << endl;
     s->color = RED;
 
     if (del == true) {
@@ -273,7 +286,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   if (getColor(p) == RED && getColor(s) == BLACK && p->right == black) {
 
     if (getColor(nr) == RED && getColor(nl) == BLACK) {
-      cout << "c4rs" << endl;
+      //cout << "c4rs" << endl;
       p->left = nr;
       nr->parent = p;
       Node* nrl = nr->left;
@@ -292,7 +305,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
       return;
     }
     else if (getColor(nr) == BLACK && getColor(nl) == BLACK) {
-      cout << "c4r" << endl;
+      //cout << "c4r" << endl;
       s->color = RED;
       p->color = BLACK;
 
@@ -309,7 +322,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   else if (getColor(p) == RED && getColor(s) == BLACK && p->left == black) {
 
     if (getColor(nl) == RED && getColor(nr) == BLACK) {
-      cout << "c4ls" << endl;
+      //cout << "c4ls" << endl;
       p->right = nl;
       nl->parent = p;
       Node* nlr = nl->right;
@@ -328,7 +341,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
       return;
     }
     else if (getColor(nl) == BLACK && getColor(nr) == BLACK) {
-      cout << "c4l" << endl;
+      //cout << "c4l" << endl;
       s->color = RED;
       p->color = BLACK;
 
@@ -341,35 +354,9 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
     
   }
 
-  
-  
-  //case 4 n is on the right
-  /*if (getColor(p) == RED && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == BLACK && p->right == black) {
-    p->color = BLACK;
-    s->color = RED;
-
-    if (del == true) {
-      remove(black);
-    }
-    
-    return;
-  }
-
-  //case 4 n is on the left
-  else if (getColor(p) == RED && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == BLACK && p->left == black) {
-    p->color = BLACK;
-    s->color = RED;
-
-    if (del == true) {
-      remove(black);
-    }
-
-    return;
-    }*/
-
   //case 5 n is on the right
   if (getColor(p) == BLACK && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == RED && p->right == black) {
-    cout << "c5r" << endl;
+    //cout << "c5r" << endl;
     Node* nrl = nr->left;
     p->left = nr;
     nr->parent = p;
@@ -395,7 +382,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 5 n is on the left
   else if (getColor(p) == BLACK && getColor(s) == BLACK && getColor(nr) == BLACK && getColor(nl) == RED && p->left == black) {
-    cout << "c5l" << endl;
+    //cout << "c5l" << endl;
     Node* nlr = nl->right;
     p->right = nl;
     nl->parent = p;
@@ -421,7 +408,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 6 n is on the right
   if (getColor(s) == BLACK && getColor(nl) == RED && p->right == black) {
-    cout << "c6r" << endl;
+    //cout << "c6r" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -460,7 +447,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 6 n is on the left
   else if (getColor(s) == BLACK && getColor(nr) == RED && p->left == black) {
-    cout << "c6l" << endl;
+    //cout << "c6l" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -498,6 +485,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   }
 }
 
+//finds node to delete if the node user wants to delete has two children
 Node* findDelNode(Node* n, int val) {
 
   Node* current = search(n, val);
@@ -517,20 +505,25 @@ Node* findDelNode(Node* n, int val) {
   
 }
 
+//starts off the delete process contains the simple cases from BST but also calls special cases for RBT
 void basicDelete(Node* &head, int val) {
 
+  //the tree is empty
   if (head == NULL) {
     cout << "The tree is empty" << endl;
     return;
   }
 
+  //search for the node in the tree
   Node* n = search(head, val);
 
+  //if its null then the node doesn't exist
   if (n == NULL) {
     cout << "This value doesn't exist in the tree" << endl;
     return;
   }
 
+  //if the node is the head of the tree its a simple delete and its the only thing in the tree
   if (n == head && childrenCount(n) == 0) {
     head = NULL;
     delete n;
@@ -552,7 +545,8 @@ void basicDelete(Node* &head, int val) {
       return;
     }    
   }
-
+  
+  //red node with one child the color doesn't matter as removing the red node won't mess anything up
   if (getColor(n) == RED && childrenCount(n) == 1) {
 
     if (n->left != NULL) {
@@ -581,13 +575,16 @@ void basicDelete(Node* &head, int val) {
     return;
   }
 
+  //if the node is black and doesn't have two children
   if (getColor(n) == BLACK && childrenCount(n) != 2) {
 
+    //if it has 0 kids its a special case
     if (childrenCount(n) == 0) {
       doubleBlack(head, n, true);
       return;
     }
 
+    //otherwise get its one child node
     Node* c = NULL;
     if (n->right != NULL) {
       c = n->right;
@@ -596,7 +593,7 @@ void basicDelete(Node* &head, int val) {
       c = n->left;
     }
 
-    
+    //if the black node is not the head
     if (n != head) {
       Node* p = n->parent;
       
@@ -609,11 +606,14 @@ void basicDelete(Node* &head, int val) {
 	c->parent = p;
       }
 
+      //if the childs color is red just delete the node and make child black
       if (getColor(c) == RED) {
 	c->color = BLACK;
 	delete n;
 	return;
       }
+
+      //otherwise its a special case
       else {
 	delete n;
 	doubleBlack(head, c, false);
@@ -621,6 +621,8 @@ void basicDelete(Node* &head, int val) {
       }
      
     }
+
+    //if the node is the black and the head delete the head set the kid to head and make it black
     else {
       head = c;
       head->color = BLACK;
@@ -630,9 +632,11 @@ void basicDelete(Node* &head, int val) {
     }
   }
 
+  //if everything before didn't work the node has two children we need to find the replacement node
   Node* delNode = findDelNode(head, val);
   n->num = delNode->num;
 
+  //if the replacement node only has one child we can try the same thing we did before
   if (childrenCount(delNode) == 1) {
     Node* c2 = NULL;
     if (delNode->left != NULL) {
@@ -678,6 +682,7 @@ void basicDelete(Node* &head, int val) {
     return;
   }
 
+  //if the replacement node is black and its child is red its fairly simple
   if (getColor(delNode) == BLACK && getColor(delNode->right) == RED) {
 
     if (delNode->num >= delNode->parent->num) {
@@ -700,19 +705,19 @@ void basicDelete(Node* &head, int val) {
     delete delNode;
     return;
   }
-  
+
+  //if nothing above worked its a special case
   doubleBlack(head, delNode, true);
 }
 
+//searchs for node in the tree and returns it
 Node* search(Node* n, int val) {
 
   if (n == NULL) {
-    cout << "The tree is empty" << endl;
     return NULL;
   }
 
   else if (n->num == val) {
-    cout << "The number exists" << endl;
     return n;
   }
 
@@ -724,7 +729,6 @@ Node* search(Node* n, int val) {
     }
 
     else {
-      cout << "The number isn't on the tree" << endl;
       return NULL;
     }
   }
@@ -737,13 +741,12 @@ Node* search(Node* n, int val) {
     }
 
     else {
-      cout << "The number isn't on the tree" << endl;
       return NULL;
     }
   }
-
 }
 
+//returns number of children a node has
 int childrenCount(Node* n) {
   int count = 0;
 
@@ -761,17 +764,21 @@ int childrenCount(Node* n) {
 
 //returns color of node if it is null it is black
 int getColor(Node* n) {
+
   if (n == NULL) {
     return BLACK;
   }
+
   return n->color;
 }
 
 //returns uncle of node
 Node* getUncle(Node* n) {
+
   if (getSibling(n->parent) == NULL) {
     return NULL;
   }
+
   return getSibling(n->parent);
 }
 
@@ -793,7 +800,6 @@ Node* getSibling(Node* n) {
   }
 
   return NULL;
-
 }
 
 //fixes the tree after a node is added
