@@ -129,7 +129,7 @@ int main() {
 }
 
 void remove(Node* current) {
-
+  cout << "remove" << endl;
   Node* p = current->parent;
   Node* c = NULL;
   
@@ -159,11 +159,11 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 1
   if (head == black) {
-
+    cout << "c1" << endl;
     if (del == true) {
       remove(black);
     }
-
+    
     return;
   }
 
@@ -175,7 +175,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   
   //case 2 n is on the left
   if (getColor(s) == RED && getColor(p) == BLACK && p->left == black) {
-
+    cout << "c2l" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -210,7 +210,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 2 n is on the right
   else if (getColor(s) == RED && getColor(p) == BLACK && p->right == black) {
-
+    cout << "c2r" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -245,6 +245,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 3 n is on the right
   if (getColor(s) == BLACK && getColor(p) == BLACK && p->right == black) {
+    cout << "c3r" << endl;
     s->color = RED;
 
     if (del == true) {
@@ -257,6 +258,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 3 n is on the left
   else if (getColor(s) == BLACK && getColor(p) == BLACK && p->left == black) {
+    cout << "c3l" << endl;
     s->color = RED;
 
     if (del == true) {
@@ -271,6 +273,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   if (getColor(p) == RED && getColor(s) == BLACK && p->right == black) {
 
     if (getColor(nr) == RED && getColor(nl) == BLACK) {
+      cout << "c4rs" << endl;
       p->left = nr;
       nr->parent = p;
       Node* nrl = nr->left;
@@ -289,6 +292,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
       return;
     }
     else if (getColor(nr) == BLACK && getColor(nl) == BLACK) {
+      cout << "c4r" << endl;
       s->color = RED;
       p->color = BLACK;
 
@@ -305,6 +309,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   else if (getColor(p) == RED && getColor(s) == BLACK && p->left == black) {
 
     if (getColor(nl) == RED && getColor(nr) == BLACK) {
+      cout << "c4ls" << endl;
       p->right = nl;
       nl->parent = p;
       Node* nlr = nl->right;
@@ -323,6 +328,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
       return;
     }
     else if (getColor(nl) == BLACK && getColor(nr) == BLACK) {
+      cout << "c4l" << endl;
       s->color = RED;
       p->color = BLACK;
 
@@ -363,6 +369,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 5 n is on the right
   if (getColor(p) == BLACK && getColor(s) == BLACK && getColor(nl) == BLACK && getColor(nr) == RED && p->right == black) {
+    cout << "c5r" << endl;
     Node* nrl = nr->left;
     p->left = nr;
     nr->parent = p;
@@ -378,15 +385,17 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
     s->parent = nr;
     s->color = RED;
 
-    if (del == true) {
-      remove(black);
-    }
-    
+    //if (del == true) {
+    //remove(black);
+    //}
+
+    doubleBlack(head, black, del);
     return;
   }
 
   //case 5 n is on the left
   else if (getColor(p) == BLACK && getColor(s) == BLACK && getColor(nr) == BLACK && getColor(nl) == RED && p->left == black) {
+    cout << "c5l" << endl;
     Node* nlr = nl->right;
     p->right = nl;
     nl->parent = p;
@@ -402,16 +411,17 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
     s->parent = nl;
     s->color = RED;
 
-    if (del == true) {
-      remove(black);
-    }
+    //if (del == true) {
+    // remove(black);
+    //}
 
+    doubleBlack(head, black, del);
     return;
   }
 
   //case 6 n is on the right
   if (getColor(s) == BLACK && getColor(nl) == RED && p->right == black) {
-
+    cout << "c6r" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -431,7 +441,8 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
     s->color = p->color;
     p->color = BLACK;
-
+    nl->color = BLACK;
+    
     s->right = p;
     p->parent = s;
     p->left = nr;
@@ -449,7 +460,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 6 n is on the left
   else if (getColor(s) == BLACK && getColor(nr) == RED && p->left == black) {
-
+    cout << "c6l" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -469,7 +480,8 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
     s->color = p->color;
     p->color = BLACK;
-
+    nr->color = BLACK;
+    
     s->left = p;
     p->parent = s;
     p->right = nl;
@@ -522,7 +534,6 @@ void basicDelete(Node* &head, int val) {
   if (n == head && childrenCount(n) == 0) {
     head = NULL;
     delete n;
-    cout << "The value has been removed from the tree" << endl;
     return;
   }
 
@@ -540,6 +551,34 @@ void basicDelete(Node* &head, int val) {
       delete n;
       return;
     }    
+  }
+
+  if (getColor(n) == RED && childrenCount(n) == 1) {
+
+    if (n->left != NULL) {
+      Node* replace = n->left;
+      replace->parent = n->parent;
+
+      if (n->parent->left == n) {
+	n->parent->left = replace;
+      }
+      else {
+	n->parent->right = replace;
+      }
+    }
+    else {
+      Node* replace = n->right;
+      replace->parent = n->parent;
+      
+      if (n->parent->left == n) {
+	n->parent->left = replace;
+      }
+      else {
+	n->parent->right = replace;
+      }
+    }
+
+    return;
   }
 
   if (getColor(n) == BLACK && childrenCount(n) != 2) {
