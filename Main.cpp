@@ -171,7 +171,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 1
   if (head == black) {
-    //cout << "c1" << endl;
+    //    cout << "c1" << endl;
     if (del == true) {
       remove(black);
     }
@@ -188,7 +188,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   
   //case 2 n is on the left
   if (getColor(s) == RED && getColor(p) == BLACK && p->left == black) {
-    //cout << "c2l" << endl;
+    //    cout << "c2l" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -223,7 +223,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
 
   //case 2 n is on the right
   else if (getColor(s) == RED && getColor(p) == BLACK && p->right == black) {
-    //cout << "c2r" << endl;
+    //    cout << "c2r" << endl;
     if (head == p) {
       head = s;
       s->parent = NULL;
@@ -257,8 +257,8 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   }
 
   //case 3 n is on the right
-  if (getColor(s) == BLACK && getColor(p) == BLACK && p->right == black) {
-    //cout << "c3r" << endl;
+  if (getColor(s) == BLACK && getColor(p) == BLACK && getColor(nr) == BLACK && getColor(nl) == BLACK && p->right == black) {
+    //    cout << "c3r" << endl;
     s->color = RED;
 
     if (del == true) {
@@ -270,8 +270,8 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   }
 
   //case 3 n is on the left
-  else if (getColor(s) == BLACK && getColor(p) == BLACK && p->left == black) {
-    //cout << "c3l" << endl;
+  else if (getColor(s) == BLACK && getColor(p) == BLACK && getColor(nr) == BLACK && getColor(nl) == BLACK && p->left == black) {
+    //    cout << "c3l" << endl;
     s->color = RED;
 
     if (del == true) {
@@ -286,7 +286,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
   if (getColor(p) == RED && getColor(s) == BLACK && p->right == black) {
 
     if (getColor(nr) == RED && getColor(nl) == BLACK) {
-      //cout << "c4rs" << endl;
+      //      cout << "c4rs" << endl;
       p->left = nr;
       nr->parent = p;
       Node* nrl = nr->left;
@@ -305,7 +305,7 @@ void doubleBlack(Node* &head, Node* &black, bool del) {
       return;
     }
     else if (getColor(nr) == BLACK && getColor(nl) == BLACK) {
-      //cout << "c4r" << endl;
+      // cout << "c4r" << endl;
       s->color = RED;
       p->color = BLACK;
 
